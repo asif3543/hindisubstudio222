@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Sub Studio | Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #ff0000; --black: #050505; --card: #121212; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; }
+        body { background: var(--black); color: #fff; }
+        
+        /* Navbar */
+        nav { background: #000; padding: 15px; border-bottom: 2px solid var(--red); text-align: center; position: sticky; top: 0; z-index: 1000; }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 24px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+        #search { width: 90%; max-width: 400px; padding: 10px; border-radius: 20px; border: 1px solid #333; background: #1a1a1a; color: #fff; outline: none; }
+
+        /* Anime Grid */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 20px; max-width: 1200px; margin: auto; }
+        .item { background: var(--card); border-radius: 8px; overflow: hidden; border: 1px solid #222; cursor: pointer; transition: 0.3s; }
+        .item:hover { border-color: var(--red); transform: translateY(-5px); }
+        .item img { width: 100%; height: 220px; object-fit: cover; }
+        .item-info { padding: 8px; text-align: center; }
+        .item-info h3 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* Modal Player */
+        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 2000; padding: 10px; overflow-y: auto; }
+        .close { color: var(--red); font-size: 40px; float: right; cursor: pointer; padding: 10px; }
+        .content { max-width: 800px; margin: 50px auto; }
+        .video-box { width: 100%; aspect-ratio: 16/9; border: 1px solid var(--red); background: #111; }
+        iframe { width: 100%; height: 100%; border: none; }
+        .details { margin-top: 20px; border-left: 3px solid var(--red); padding-left: 15px; }
+        .details h2 { color: var(--red); margin-bottom: 10px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        .btn { flex: 1; padding: 12px; text-align: center; border-radius: 4px; text-decoration: none; color: #fff; font-weight: bold; font-size: 14px; }
+        .btn-dl { background: var(--red); }
+        .btn-tg { background: #0088cc; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">Hindi Sub Studio</div>
+    <input type="text" id="search" placeholder="Search anime..." onkeyup="search()">
+</nav>
+
+<div id="loader" style="text-align: center; padding: 50px; color: var(--red);">Loading Movies...</div>
+<div class="grid" id="container"></div>
+
+<div id="modal">
+    <span class="close" onclick="closeM()">&times;</span>
+    <div class="content" id="mContent"></div>
+</div>
+
+<script>
+    const api = 'https://script.google.com/macros/s/AKfycbxQBAVgUwhntNMDTgIX9K7SNWxMDpnW6QPIfexXrObrw5NhN7B1zingExQTAC4KohSIqw/exec';
+    let rawData = [];
+
+    async function load() {
+        try {
+            const r = await fetch(api);
+            rawData = await r.json();
+            document.getElementById('loader').style.display = 'none';
+            render(rawData);
+        } catch (e) { document.getElementById('loader').innerText = "Error Loading!"; }
+    }
+
+    function render(data) {
+        const c = document.getElementById('container');
+        c.innerHTML = data.map((x, i) => `
+            <div class="item" onclick="openM(${i})">
+                <img src="${x.poster}">
+                <div class="item-info">
+                    <p style="color:red; font-size:10px;">${x.category}</p>
+                    <h3>${x.name}</h3>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function search() {
+        let q = document.getElementById('search').value.toLowerCase();
+        render(rawData.filter(x => x.name.toLowerCase().includes(q)));
+    }
+
+    function openM(i) {
+        const x = rawData[i];
+        document.getElementById('modal').style.display = 'block';
+        document.getElementById('mContent').innerHTML = `
+            <div class="video-box"><iframe src="${x.episodes}" allowfullscreen></iframe></div>
+            <div class="details">
+                <h2>${x.name}</h2>
+                <p style="color:#aaa; font-size:12px;">Genre: ${x.genre} | Date: ${x.date}</p>
+                <p style="margin-top:10px;">${x.story}</p>
+                <div class="btn-row">
+                    <a href="${x.episodes}" class="btn btn-dl">WATCH / DOWNLOAD</a>
+                    <a href="${x.password}" class="btn btn-tg">JOIN TELEGRAM</a>
+                </div>
+            </div>
+        `;
+    }
+
+    function closeM() { document.getElementById('modal').style.display = 'none'; document.getElementById('mContent').innerHTML = ''; }
+    load();
+</script>
+</body>
+</html>
