@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Upload Anime</title>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; padding: 20px; text-align: center; }
+        .box { max-width: 450px; margin: auto; background: #111; padding: 25px; border-radius: 10px; border-top: 4px solid red; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; }
+        button { width: 100%; padding: 15px; background: red; border: none; color: #fff; font-weight: bold; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2 style="color:red">ADMIN PANEL</h2>
+        <form id="f">
+            <input type="text" name="ID" placeholder="ID (1, 2, 3...)" required>
+            <input type="text" name="Name" placeholder="Anime Title" required>
+            <input type="text" name="Category" placeholder="Category (Anime/Movie)">
+            <input type="text" name="Poster" placeholder="Poster Link (URL)" required>
+            <input type="text" name="Date" placeholder="Year (2026)">
+            <input type="text" name="Genre" placeholder="Genre (Action, Comedy)">
+            <textarea name="Story" placeholder="Description" rows="3"></textarea>
+            <input type="text" name="Episodes" placeholder="Video Link (Direct Link)" required>
+            <input type="text" name="Password" placeholder="Telegram Channel Link">
+            <button type="submit" id="b">UPLOAD NOW</button>
+        </form>
+        <p id="s" style="margin-top:15px;"></p>
+    </div>
+
+<script>
+    const api = 'https://script.google.com/macros/s/AKfycbxQBAVgUwhntNMDTgIX9K7SNWxMDpnW6QPIfexXrObrw5NhN7B1zingExQTAC4KohSIqw/exec';
+    document.getElementById('f').addEventListener('submit', e => {
+        e.preventDefault();
+        document.getElementById('b').innerText = "Uploading...";
+        fetch(api, { method: 'POST', body: new FormData(document.getElementById('f'))})
+        .then(r => {
+            document.getElementById('s').innerText = "Success! Site Updated.";
+            document.getElementById('b').innerText = "UPLOAD NOW";
+            document.getElementById('f').reset();
+        }).catch(err => { document.getElementById('s').innerText = "Error!"; });
+    });
+</script>
+</body>
+</html>
